@@ -1,7 +1,7 @@
 package store_handler
 
 import (
-	"github.com/dgraph-io/badger/v2"
+	"github.com/dgraph-io/badger/v4"
 	"github.com/hashicorp/raft"
 )
 

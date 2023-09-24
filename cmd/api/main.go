@@ -2,10 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/dgraph-io/badger/v2"
-	"github.com/hashicorp/raft"
-	"github.com/hashicorp/raft-boltdb"
-	"github.com/spf13/viper"
 	"log"
 	"net"
 	"os"
@@ -13,6 +9,11 @@ import (
 	"time"
 	"ysf/raftsample/fsm"
 	"ysf/raftsample/server"
+
+	"github.com/dgraph-io/badger/v4"
+	"github.com/hashicorp/raft"
+	raftboltdb "github.com/hashicorp/raft-boltdb"
+	"github.com/spf13/viper"
 )
 
 // configRaft configuration for raft node
@@ -105,7 +106,7 @@ func main() {
 		}
 	}()
 
-	var raftBinAddr = fmt.Sprintf(":%d", conf.Raft.Port)
+	var raftBinAddr = fmt.Sprintf("127.0.0.1:%d", conf.Raft.Port)
 
 	raftConf := raft.DefaultConfig()
 	raftConf.LocalID = raft.ServerID(conf.Raft.NodeId)
@@ -134,19 +135,19 @@ func main() {
 
 	tcpAddr, err := net.ResolveTCPAddr("tcp", raftBinAddr)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("aa", err)
 		return
 	}
 
 	transport, err := raft.NewTCPTransport(raftBinAddr, tcpAddr, maxPool, tcpTimeout, os.Stdout)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("aac", err)
 		return
 	}
 
 	raftServer, err := raft.NewRaft(raftConf, fsmStore, cacheStore, store, snapshotStore, transport)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("aacc", err)
 		return
 	}
 
@@ -164,7 +165,7 @@ func main() {
 
 	srv := server.New(fmt.Sprintf(":%d", conf.Server.Port), badgerDB, raftServer)
 	if err := srv.Start(); err != nil {
-		log.Fatal(err)
+		log.Fatal("a:", err)
 	}
 
 	return
